@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM loaded");
     const eventSource = new EventSource(qrCodeStream.sseUrl);
     const qrCodeElement = document.getElementById("qr-code");
     const qrTextElement = document.getElementById("qr-code-text");

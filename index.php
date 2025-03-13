@@ -34,7 +34,7 @@ add_action('wp_ajax_qr_code_sse', 'qr_code_stream_sse');
 // Enqueue scripts
 function qr_code_stream_enqueue_scripts() {
     wp_enqueue_script('qr-code-generator', 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js', [], null, true);
-    wp_enqueue_script('qr-code-stream', QR_CODE_SSE_URL . 'qr-code-stream.js', ['jquery'], null, true);
+    wp_enqueue_script('qr-code-stream', QR_CODE_SSE_URL . 'qr-code-stream.js', ['jquery'], '1.0', true);
     wp_localize_script('qr-code-stream', 'qrCodeStream', [
         'sseUrl' => admin_url('admin-ajax.php?action=qr_code_sse')
     ]);
