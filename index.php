@@ -14,17 +14,33 @@ if (!defined('ABSPATH')) {
 define('QR_CODE_SSE_URL', plugin_dir_url(__FILE__));
 
 function qr_code_stream_sse() {
-    header("X-Accel-Buffering: no");
     header('Content-Type: text/event-stream');
     header('Cache-Control: no-cache');
     header('Connection: keep-alive');
+    header('X-Accel-Buffering: no'); // Disable buffering for Nginx
+
+    ignore_user_abort(true); // Keep the connection alive even if the user disconnects
+    set_time_limit(0); // Prevent PHP timeout
+
+    if (ob_get_level() == 0) ob_start(); // Ensure output buffering is enabled
     
+    $startTime = time();
+    $codes = [];
+    for ($i = 0; $i < 150; $i++) { // Generate 150 random codes
+        $codes[] = str_pad(random_int(0, 9999999999), 10, "0", STR_PAD_LEFT);
+    }
+    
+    $index = 0;
     while (true) {
-        $code = str_pad(random_int(0, 9999999999), 10, "0", STR_PAD_LEFT);
+        if (/*(time() - $startTime) > 300 || */ $index >= count($codes)) { // Cloudflare allows up to 100 seconds, refresh before timeout
+            break;
+        }
+        
+        $code = $codes[$index++];
         echo "data: " . json_encode(["code" => $code]) . "\n\n";
-        ob_flush();
+        ob_end_flush();
         flush();
-        usleep(2000000); // Add a delay of 2 seconds
+        sleep(2);
     }
     exit;
 }
